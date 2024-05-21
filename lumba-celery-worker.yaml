@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: celery-worker
+  template:
+    metadata:
+      labels:
+        name: celery-worker
+    spec:
+      containers:
+        - name: celery-worker
+          image: gbhisma/lumba-model
+          command:
+            - "bash"
+            - "-c"
+            - "celery -A modeling worker -l info"

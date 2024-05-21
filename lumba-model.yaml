@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lumba-model-deployment
+  labels:
+    app: lumba-model
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lumba-model
+  template:
+    metadata:
+      labels:
+        app: lumba-model
+    spec:
+      containers:
+        - name: lumba-model
+          image: gbhisma/lumba-model
+          ports:
+            - containerPort: 7000
+              name: lumba-model
+          env:
+            - name: BACKEND_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: lumba-api-config
+                  key: api-url
+            - name: REDIS_ENDPOINT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: lumba-secret
+                  key: REDIS_ENDPOINT_URL
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lumba-model-service
+spec:
+  selector:
+    app: lumba-model
+  ports:
+    - protocol: TCP
+      port: 7000
