@@ -38,8 +38,10 @@ kind: Service
 metadata:
   name: lumba-model-service
 spec:
+  type: NodePort
   selector:
     app: lumba-model
   ports:
     - protocol: TCP
-      port: 7000
+      port: 80
+      targetPort: lumba-model

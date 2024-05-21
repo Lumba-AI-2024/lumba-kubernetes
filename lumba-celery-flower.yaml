@@ -1,24 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: celery-worker
+  name: celery-flower
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: celery-worker
+      name: celery-flower
   template:
     metadata:
       labels:
-        name: celery-worker
+        name: celery-flower
     spec:
       containers:
-        - name: celery-worker
+        - name: celery-flower
           image: gbhisma/lumba-model
+          ports:
+            - containerPort: 5555
+              name: lumba-flower
           command:
             - "bash"
             - "-c"
-            - "celery -A modeling worker -l info"
+            - "celery -A modeling flower -l info"
           env:
             - name: BACKEND_API_URL
               valueFrom:
@@ -30,3 +33,16 @@ spec:
                 secretKeyRef:
                   name: lumba-secret
                   key: REDIS_ENDPOINT_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lumba-flower-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: lumba-flower
+  ports:
+    - protocol: TCP
+      port: 5555
+      targetPort: lumba-flower
