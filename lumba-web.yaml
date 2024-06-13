@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lumba-web-deployment
+  labels:
+    app: lumba-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lumba-web
+  template:
+    metadata:
+      labels:
+        app: lumba-web
+    spec:
+      containers:
+        - name: lumba-web
+          image: gbhisma/lumba-web
+          imagePullPolicy: Always
+          command:
+            - "bash"
+            - "-c"
+            - "npm run dev"
+          ports:
+            - containerPort: 7000
+              name: lumba-web
+          envFrom:
+            - secretRef:
+                name: lumba-secret
+          env:
+            - name: NEXT_PUBLIC_API_ROUTE
+              valueFrom:
+                configMapKeyRef:
+                  name: lumba-api-config
+                  key: api-url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lumba-web-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: lumba-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: lumba-web
