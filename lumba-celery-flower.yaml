@@ -21,7 +21,7 @@ spec:
           command:
             - "bash"
             - "-c"
-            - "celery -A modeling flower -l info"
+            - "celery -A modeling flower -l info --persistent=True"
           env:
             - name: BACKEND_API_URL
               valueFrom:

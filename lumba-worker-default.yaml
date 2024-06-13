@@ -1,30 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lumba-model-deployment
-  labels:
-    app: lumba-model
+  name: lumba-worker-default
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
-      app: lumba-model
+      name: lumba-worker-default
   template:
     metadata:
       labels:
-        app: lumba-model
+        name: lumba-worker-default
     spec:
       containers:
-        - name: lumba-model
+        - name: lumba-worker-default
           image: gbhisma/lumba-model
           imagePullPolicy: Always
           command:
             - "bash"
             - "-c"
-            - "gunicorn --bind :7000 --workers 2 --threads 4 modeling.wsgi:application"
-          ports:
-            - containerPort: 7000
-              name: lumba-model
+            - "python3 manage.py rqworker default"
           envFrom:
             - secretRef:
                 name: lumba-secret
@@ -43,17 +38,3 @@ spec:
                 secretKeyRef:
                   name: lumba-secret
                   key: REDIS_ENDPOINT_URL
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: lumba-model-service
-spec:
-  type: NodePort
-  selector:
-    app: lumba-model
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: lumba-model
