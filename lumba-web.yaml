@@ -18,10 +18,6 @@ spec:
         - name: lumba-web
           image: gbhisma/lumba-web
           imagePullPolicy: Always
-          command:
-            - "bash"
-            - "-c"
-            - "npm run dev"
           ports:
             - containerPort: 3000
               name: lumba-web
@@ -29,6 +25,13 @@ spec:
             - secretRef:
                 name: lumba-secret
           env:
+            - name: NEXT_PUBLIC_NODE_ENV
+              value: DEVELOPMENT
+            - name: NEXT_PUBLIC_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: lumba-web-config
+                  key: web-url
             - name: NEXT_PUBLIC_API_ROUTE
               valueFrom:
                 configMapKeyRef:
