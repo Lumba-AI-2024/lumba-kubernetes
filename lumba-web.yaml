@@ -23,7 +23,7 @@ spec:
             - "-c"
             - "npm run dev"
           ports:
-            - containerPort: 7000
+            - containerPort: 3000
               name: lumba-web
           envFrom:
             - secretRef:
